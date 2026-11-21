@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MESHTACTICO · Nodos configurados</title>
+<meta name="description" content="Nodos LilyGO T-Echo y T-Echo Plus con Meshtastic, configurados a medida para seguridad privada, airsoft y emergencias.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Chakra+Petch:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: directo, de campo, sin humo; habla a quien coordina un equipo fuera de cobertura.
+   IDEA: la pantalla táctica donde ves tu malla: la página se comporta como ese mapa.
+   PICTURE: panel ancho de mapa topográfico con nodos, enlaces y mensajes saltando; vista previa viva de "tu red" en el formulario.
+   COLOUR and TYPE: noche MESHTACTICO: negro oliva, verde fósforo, cian para enlaces, naranja señal para plazos; Chakra Petch + Barlow.
+   LAYOUT: titular sobre mapa a todo ancho, usos, dos equipos, proceso con plazo, formulario con vista previa, FAQ, pie. */
+:root{color-scheme:dark;--bg:#090e0b;--bg2:#0d1510;--panel:#111b15;--line:#1f3026;--ink:#e4eee7;--mute:#93a99a;--g:#46f28d;--gd:#1d6b42;--c:#4cc9f0;--o:#ff8c42}
+:root[data-theme=light],:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 Barlow,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3,.brand,.btn,.facts b{font-family:"Chakra Petch",Barlow,sans-serif}
+h1,h2{line-height:1.05;text-wrap:balance;margin:0 0 .45em}
+h1{font-size:clamp(34px,5.2vw,52px)}
+h2{font-size:clamp(28px,3.6vw,40px)}
+h3{font-size:21px;margin:0 0 .35em;line-height:1.2}
+p{margin:0 0 1em}
+a{color:var(--c)}
+.wrap{max-width:1240px;margin:0 auto}
+.band{padding:clamp(44px,6vw,88px) max(5vw,16px)}
+.alt{background:var(--bg2);border-block:1px solid var(--line)}
+.lead{color:var(--mute);max-width:62ch;font-size:18px}
+:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+nav{position:sticky;top:0;z-index:5;padding:0 max(5vw,16px);background:rgba(9,14,11,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:20px;padding:10px 0}
+.brand{font-weight:700;font-size:20px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:9px}
+.brand b{color:var(--g)}
+.links{display:flex;align-items:center;gap:22px;margin-left:auto}
+.links a:not(.btn){color:var(--mute);text-decoration:none;font-weight:500}
+.links a:not(.btn):hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border-radius:6px;font-weight:700;font-size:17px;text-decoration:none;border:1px solid transparent;cursor:pointer}
+.pri{background:var(--g);color:#04140a}.pri:hover{filter:brightness(1.08)}.pri:disabled{opacity:.6;cursor:wait}
+.sec{border-color:var(--line);color:var(--ink);background:transparent}.sec:hover{border-color:var(--g)}
+.sm{min-height:44px;padding:0 16px;font-size:15px}
+.hero{padding-bottom:clamp(36px,5vw,64px)}
+.top{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px 48px;align-items:end;margin-bottom:28px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.plazo{position:relative;padding-left:21px;color:var(--o);font-weight:600;margin:16px 0 4px}
+.plazo::before{content:"";position:absolute;left:2px;top:.5em;width:9px;height:9px;border-radius:50%;background:var(--o);box-shadow:0 0 0 4px rgba(255,140,66,.22)}
+.small{font-size:14px;color:var(--mute);margin:0}
+.map{position:relative;height:clamp(280px,38vw,440px);border:1px solid var(--line);border-radius:10px;background:radial-gradient(120% 90% at 46% 18%,#14261b,#0a110d 70%);overflow:hidden}
+.map>svg{position:absolute;inset:0;width:100%;height:100%}
+.map::before,.map::after{content:"";position:absolute;width:22px;height:22px;z-index:1}
+.map::before{top:9px;right:9px;border-top:2px solid var(--g);border-right:2px solid var(--g)}
+.map::after{bottom:9px;left:9px;border-bottom:2px solid var(--g);border-left:2px solid var(--g)}
+.hud{position:absolute;z-index:2;font-size:14px;color:var(--mute);background:rgba(9,14,11,.8);border:1px solid var(--line);border-radius:6px;padding:6px 10px}
+.hud b{color:var(--g);font-weight:600}
+.tl{top:12px;left:12px}.br{bottom:12px;right:12px}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:22px}
+.facts div{background:var(--bg);padding:18px 20px}
+.facts b{display:block;font-size:21px;color:var(--g)}
+.facts span{color:var(--mute);font-size:15px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:30px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:30px}
+.card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;display:flex;flex-direction:column}
+.card p{color:var(--mute)}
+.ic{width:46px;height:46px;margin-bottom:14px;fill:none;stroke:var(--k);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.card ul{margin:auto 0 0;padding:14px 0 0;list-style:none;border-top:1px solid var(--line)}
+.card li{padding:4px 0 4px 22px;position:relative;font-size:16px}
+.card li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border:2px solid var(--k);border-radius:50%}
+.dev .row{display:flex;gap:20px;align-items:flex-start}
+.dev svg{flex:none;width:92px;height:128px}
+.tag{position:absolute;top:18px;right:18px;background:var(--g);color:#04140a;font-weight:700;font-size:13px;padding:3px 10px;border-radius:99px}
+dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 18px;margin:16px 0 0;padding-top:14px;border-top:1px solid var(--line)}
+dt{color:var(--mute)}dd{margin:0;font-weight:500}
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;margin-top:34px}
+.step{border-top:2px solid var(--gd);padding-top:18px;position:relative}
+.step::before{content:"";position:absolute;top:-7px;left:0;width:12px;height:12px;border-radius:50%;background:var(--g);box-shadow:0 0 0 4px var(--bg2)}
+.step p{color:var(--mute);margin:0}
+.notice{margin-top:30px;border:1px solid rgba(255,140,66,.45);background:rgba(255,140,66,.07);border-radius:10px;padding:16px 20px}
+.notice b{color:var(--o)}
+.order{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);grid-template-areas:"f a";gap:36px;margin-top:30px;align-items:start}
+.order form,.order .res{grid-area:f}
+.prev{grid-area:a;position:sticky;top:88px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+.fig{position:relative;min-height:250px}.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+.sum{list-style:none;padding:0;margin:12px 0;border-top:1px solid var(--line)}
+.sum li{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+.sum span{color:var(--mute)}.sum b{text-align:right;font-weight:600}
+fieldset{border:0;padding:0;margin:0 0 24px}
+legend,.lbl{display:block;font-weight:600;margin-bottom:10px;padding:0}
+legend em,.lbl em{font-style:normal;font-weight:400;color:var(--mute)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative;display:block}
+.chip input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.chip span{display:flex;flex-direction:column;justify-content:center;min-height:46px;padding:6px 16px;border:1px solid var(--line);border-radius:6px;background:var(--panel);font-weight:500;line-height:1.25}
+.chip small{color:var(--mute);font-weight:400;font-size:13px}
+.chip input:checked+span{border-color:var(--g);background:#13291c;color:var(--g)}
+.chip input:focus-visible+span{outline:2px solid var(--c);outline-offset:2px}
+label.f{display:block;margin-bottom:18px}
+input[type=text],input[type=email],input[type=tel],textarea{width:100%;font:16px/1.4 Barlow,sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px;min-height:48px}
+textarea{min-height:92px;resize:vertical}
+::placeholder{color:#62786a}
+input:focus,textarea:focus{outline:2px solid var(--c);outline-offset:1px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.stepper button{width:48px;height:48px;background:none;border:0;color:var(--g);font-size:24px;cursor:pointer;font-family:inherit}
+.stepper input{width:64px;text-align:center;border:0;background:none;font:700 20px "Chakra Petch",sans-serif;color:var(--ink);min-height:48px;appearance:textfield;-moz-appearance:textfield}
+.stepper input::-webkit-inner-spin-button,.stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.consent{display:flex;gap:12px;align-items:flex-start;font-size:15px;color:var(--mute);margin:4px 0 20px;cursor:pointer}
+.consent input{width:22px;height:22px;flex:none;margin:1px 0 0;accent-color:var(--g)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.res{border-radius:10px;padding:26px;background:var(--panel)}
+.done{border:1px solid var(--g)}.done h3{color:var(--g)}
+.fail{border:1px solid var(--o)}.fail h3{color:var(--o)}
+.fail textarea{margin:12px 0;font-size:14px;min-height:150px}
+.res .cta{margin-top:6px}
+.faq{max-width:880px}
+details{border-bottom:1px solid var(--line);padding:16px 0}
+summary{cursor:pointer;font-weight:600;font-size:18px;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center;min-height:32px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";flex:none;color:var(--g);font:700 24px/1 "Chakra Petch",sans-serif}
+details[open] summary::after{content:"–"}
+details p{color:var(--mute);margin:10px 0 0;max-width:70ch}
+footer{padding:34px max(5vw,16px);border-top:1px solid var(--line);color:var(--mute);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:10px 36px;justify-content:space-between}
+footer p{margin:0;max-width:60ch}
+@media(max-width:900px){.grid3{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.order{grid-template-columns:1fr;grid-template-areas:"a" "f"}.prev{position:static}}
+@media(max-width:820px){.top{grid-template-columns:1fr}}
+@media(max-width:760px){.grid2,.facts{grid-template-columns:1fr}.links a:not(.btn){display:none}}
+@media(max-width:560px){.two{grid-template-columns:1fr}.steps{grid-template-columns:1fr}.dev .row{flex-direction:column}.hud{font-size:13px}.br{display:none}.tl{top:auto;left:auto;bottom:12px;right:12px}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="brand" href="#inicio" aria-label="MESHTACTICO, inicio">
+    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path d="M5 20 13 5 21 20Z M5 20h16" fill="none" stroke="#4cc9f0" stroke-width="1.6"/><circle cx="13" cy="5" r="3.2" fill="#46f28d"/><circle cx="5" cy="20" r="3.2" fill="#46f28d"/><circle cx="21" cy="20" r="3.2" fill="#ff8c42"/></svg>
+    <span><b>MESH</b>TACTICO</span></a>
+  <div class="links"><a href="#usos">Usos</a><a href="#equipos">Equipos</a><a href="#proceso">Proceso</a><a href="#faq">Dudas</a><a class="btn pri sm" href="#pedido">Pide tu red</a></div>
+</div></nav>
+
+<header class="band hero" id="inicio"><div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Tu red de comunicaciones, lista para encender.</h1>
+      <p class="lead" style="margin:0">Nodos LilyGO T-Echo y T-Echo Plus con Meshtastic, configurados a medida para tu equipo. Mensajes cifrados y posición GPS donde no llega el móvil. Sin SIM, sin cuotas y sin pelearte con la configuración.</p>
+    </div>
+    <div>
+      <div class="cta"><a class="btn pri" href="#pedido">Configurar mi red</a><a class="btn sec" href="#usos">Ver usos</a></div>
+      <p class="plazo">Plazo estimado: <span class="plazo-txt">3–4 semanas</span></p>
+      <p class="small">Presupuesto cerrado y sin compromiso en 24–48 h.</p>
+    </div>
+  </div>
+  <div class="map" id="map" role="img" aria-label="Mapa topográfico con seis nodos enlazados en malla y un relé en la cima, intercambiando mensajes">
+    <svg id="mapsvg"></svg>
+    <div class="hud tl"><b>●</b> Canal privado · cifrado</div>
+    <div class="hud br">6 nodos · sin cobertura móvil</div>
+  </div>
+  <div class="facts">
+    <div><b>Sin cobertura</b><span>Los nodos se hablan entre sí y repiten los mensajes de los demás.</span></div>
+    <div><b>Canal cifrado</b><span>Clave propia AES-256 solo para tu equipo.</span></div>
+    <div><b>Banda libre 868 MHz</b><span>Sin licencias, sin SIM y sin cuotas mensuales.</span></div>
+  </div>
+</div></header>
+
+<section class="band alt" id="usos"><div class="wrap">
+  <h2>Para equipos que trabajan donde falla la cobertura</h2>
+  <p class="lead">Cada red se configura según cómo trabaja tu gente: quién ve a quién, qué se envía y cada cuánto se actualiza la posición.</p>
+  <div class="grid3">
+    <article class="card" style="--k:#4cc9f0">
+      <svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><path d="M23 5 39 11v12c0 9.5-7 16.5-16 19-9-2.5-16-9.5-16-19V11Z"/><path d="m16 23 5 5 9-10"/></svg>
+      <h3>Seguridad privada</h3>
+      <p>Rondas en polígonos, naves, obras y eventos donde el móvil no llega. Cada vigilante en el mapa y los avisos al instante en el canal del servicio.</p>
+      <ul><li>Posición de cada puesto en el mapa</li><li>Mensajes y alertas a todo el turno</li><li>Relés para cubrir zonas muertas</li></ul>
+    </article>
+    <article class="card" style="--k:#46f28d">
+      <svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><circle cx="23" cy="23" r="15"/><circle cx="23" cy="23" r="5"/><path d="M23 3v8M23 35v8M3 23h8M35 23h8"/></svg>
+      <h3>Airsoft</h3>
+      <p>Tu escuadra en el mapa y en su propio canal. Coordinación por texto sin depender de que haya datos en el campo ni de saturar la radio de voz.</p>
+      <ul><li>Canal cifrado por escuadra</li><li>Posición de tu binomio en el mapa</li><li>Nodo ligero que se engancha al equipo</li></ul>
+    </article>
+    <article class="card" style="--k:#ff8c42">
+      <svg class="ic" viewBox="0 0 46 46" aria-hidden="true"><path d="M3 40 17 17l8 12 5-7 13 18Z"/><path d="M30 9a7 7 0 0 1 8 0M27 5a12 12 0 0 1 14 0"/><circle cx="34" cy="13" r="1.6"/></svg>
+      <h3>Emergencias y voluntariado</h3>
+      <p>Apoyo para agrupaciones de voluntarios, búsquedas y montaña cuando las redes caen o no existen. Complementa, no sustituye, los medios oficiales.</p>
+      <ul><li>Funciona sin ninguna infraestructura</li><li>Relés solares para cubrir valles</li><li>Batería para jornadas largas</li></ul>
+    </article>
+  </div>
+</div></section>
+
+<section class="band" id="equipos"><div class="wrap">
+  <h2>Dos equipos, una misma red</h2>
+  <p class="lead">Se pueden mezclar en la misma red. Si no sabes cuál te conviene, márcalo en el formulario y te asesoramos.</p>
+  <div class="grid2">
+    <article class="card dev">
+      <div class="row">
+        <svg viewBox="0 0 92 128" aria-hidden="true"><rect x="62" y="2" width="6" height="34" rx="3" fill="#2b3b31"/><rect x="10" y="30" width="72" height="94" rx="12" fill="#18241d" stroke="#2c4234" stroke-width="2"/><rect x="20" y="42" width="52" height="44" rx="3" fill="#c9d4cc"/><path d="M28 74 36 56l8 10 6-6 14 14" fill="none" stroke="#5b6b60" stroke-width="2"/><circle cx="32" cy="104" r="6" fill="#2c4234"/><circle cx="60" cy="104" r="6" fill="#2c4234"/></svg>
+        <div><h3>T-Echo</h3><p>El ligero. Compacto y de bajo consumo: para llevar encima todo el día, como baliza o como relé discreto.</p></div>
+      </div>
+      <dl><dt>Procesador</dt><dd>nRF52840 de bajo consumo</dd><dt>Pantalla</dt><dd>Tinta electrónica, legible a pleno sol</dd><dt>Posición</dt><dd>GPS integrado</dd><dt>Batería</dt><dd>850 mAh</dd></dl>
+    </article>
+    <article class="card dev">
+      <span class="tag">Recomendado</span>
+      <div class="row">
+        <svg viewBox="0 0 92 128" aria-hidden="true"><circle cx="20" cy="18" r="10" fill="none" stroke="#46f28d" stroke-width="3"/><rect x="64" y="0" width="6" height="30" rx="3" fill="#2b3b31"/><rect x="8" y="24" width="76" height="102" rx="13" fill="#18241d" stroke="#46f28d" stroke-width="2"/><rect x="19" y="38" width="54" height="46" rx="3" fill="#c9d4cc"/><path d="M27 72 35 54l8 10 6-6 15 14" fill="none" stroke="#5b6b60" stroke-width="2"/><circle cx="31" cy="104" r="6" fill="#2c4234"/><circle cx="61" cy="104" r="6" fill="#2c4234"/><path d="M88 56v16M91 60v8" stroke="#46f28d" stroke-width="2"/></svg>
+        <div><h3>T-Echo Plus</h3><p>El de campo. Casi triplica la batería y avisa por vibración. Pensado para jornadas largas y uso en movimiento.</p></div>
+      </div>
+      <dl><dt>Base</dt><dd>Lo mismo que el T-Echo, y además:</dd><dt>Batería</dt><dd>2.400 mAh</dd><dt>Avisos</dt><dd>Vibración y zumbador</dd><dt>Sensores</dt><dd>Movimiento (IMU)</dd><dt>Montaje</dt><dd>Rosca 1/4" y enganche para mochila o chaleco</dd></dl>
+    </article>
+  </div>
+</div></section>
+
+<section class="band alt" id="proceso"><div class="wrap">
+  <h2>Del formulario a tu red funcionando</h2>
+  <div class="steps">
+    <div class="step"><h3>Rellenas el formulario</h3><p>Dos minutos: cuántos nodos, para qué y cómo queréis llamaros.</p></div>
+    <div class="step"><h3>Presupuesto cerrado</h3><p>Te respondemos en 24–48 h con precio y plazo. Sin compromiso.</p></div>
+    <div class="step"><h3>Configuración y prueba</h3><p>Cada nodo con su nombre, canal cifrado, GPS y rol: portátil, baliza o relé. Se prueban antes de salir.</p></div>
+    <div class="step"><h3>Entrega y seguimiento</h3><p>Llegan listos para encender. Videollamada de puesta en marcha y <span class="soporte-txt">30 días</span> de soporte directo.</p></div>
+  </div>
+  <div class="notice"><b>Plazo estimado: <span class="plazo-txt">3–4 semanas</span></b> desde que confirmas el pedido. Los equipos se piden bajo demanda y cada red se configura y se prueba a mano. No es inmediato, pero llega funcionando.</div>
+</div></section>
+
+<section class="band" id="pedido"><div class="wrap">
+  <h2>Pide tu red</h2>
+  <p class="lead">Cuéntanos qué necesitas y te enviamos un presupuesto cerrado. Sin compromiso.</p>
+  <div class="order">
+    <aside class="prev" aria-live="polite">
+      <h3>Tu red</h3>
+      <div class="fig" id="pvbox"><svg id="pv" role="img" aria-label="Vista previa de tu red"></svg></div>
+      <ul class="sum" id="sum"></ul>
+      <p class="small">Vista orientativa. La configuración final la ajustamos contigo.</p>
+    </aside>
+    <form id="form" novalidate>
+      <fieldset><legend>¿Para qué la vas a usar?</legend><div class="chips">
+        <label class="chip"><input type="radio" name="sector" value="Seguridad privada" required><span>Seguridad privada</span></label>
+        <label class="chip"><input type="radio" name="sector" value="Airsoft"><span>Airsoft</span></label>
+        <label class="chip"><input type="radio" name="sector" value="Emergencias y voluntariado"><span>Emergencias y voluntariado</span></label>
+        <label class="chip"><input type="radio" name="sector" value="Otro"><span>Otro</span></label>
+      </div></fieldset>
+      <fieldset><legend>Equipo</legend><div class="chips">
+        <label class="chip"><input type="radio" name="modelo" value="T-Echo Plus" required checked><span>T-Echo Plus<small>Más batería y vibración</small></span></label>
+        <label class="chip"><input type="radio" name="modelo" value="T-Echo"><span>T-Echo<small>Ligero y compacto</small></span></label>
+        <label class="chip"><input type="radio" name="modelo" value="Asesórame"><span>Asesórame<small>Elegimos contigo</small></span></label>
+      </div></fieldset>
+      <fieldset><legend>Número de nodos</legend>
+        <div class="stepper"><button type="button" id="minus" aria-label="Quitar un nodo">−</button><input type="number" id="nodos" name="nodos" value="4" min="2" max="50" inputmode="numeric" aria-label="Número de nodos"><button type="button" id="plus" aria-label="Añadir un nodo">+</button></div>
+      </fieldset>
+      <fieldset><legend>Extras <em>(opcional)</em></legend><div class="chips">
+        <label class="chip"><input type="checkbox" name="extras" value="Relé solar"><span>Relé solar</span></label>
+        <label class="chip"><input type="checkbox" name="extras" value="Antena de mayor ganancia"><span>Antena de mayor ganancia</span></label>
+        <label class="chip"><input type="checkbox" name="extras" value="Integración con ATAK"><span>Integración con ATAK</span></label>
+      </div></fieldset>
+      <label class="f"><span class="lbl">Nombres o indicativos <em>(opcional)</em></span><textarea id="indicativos" name="indicativos" placeholder="ALFA-1, ALFA-2, BRAVO-1…"></textarea></label>
+      <div class="two">
+        <label class="f"><span class="lbl">Zona de uso</span><input type="text" name="zona" placeholder="Provincia o zona" maxlength="120"></label>
+        <label class="f"><span class="lbl">Empresa o grupo <em>(opcional)</em></span><input type="text" name="empresa" maxlength="120" autocomplete="organization"></label>
+      </div>
+      <label class="f"><span class="lbl">Cuéntanos el uso <em>(opcional)</em></span><textarea name="uso" maxlength="2000" placeholder="Turnos, terreno, distancias, qué necesitáis ver o enviar…"></textarea></label>
+      <div class="two">
+        <label class="f"><span class="lbl">Nombre</span><input type="text" name="nombre" required maxlength="80" autocomplete="name"></label>
+        <label class="f"><span class="lbl">Email</span><input type="email" name="email" required maxlength="120" autocomplete="email"></label>
+      </div>
+      <label class="f"><span class="lbl">Teléfono <em>(opcional)</em></span><input type="tel" name="telefono" maxlength="30" autocomplete="tel"></label>
+      <div class="hp" aria-hidden="true"><label>Web<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+      <label class="consent"><input type="checkbox" name="consentimiento" value="sí" required><span>Acepto que MESHTACTICO use estos datos solo para responder a esta solicitud. No se ceden a terceros y puedes pedir su borrado cuando quieras.</span></label>
+      <button class="btn pri" type="submit" id="send">Enviar solicitud</button>
+      <p class="small" id="msg" role="alert" style="margin-top:10px">Sin compromiso. Te respondemos en 24–48 h.</p>
+    </form>
+    <div class="res done" id="done" hidden><h3>Solicitud recibida</h3><p>Te escribimos a <b id="doneMail"></b> en 24–48 h con el presupuesto cerrado.</p><p class="plazo" style="margin:0">Plazo estimado de entrega: <span class="plazo-txt">3–4 semanas</span> desde la confirmación.</p></div>
+    <div class="res fail" id="fail" hidden><h3>No se ha podido enviar</h3><p>Copia el resumen y mándanoslo por Instagram; te respondemos igual.</p><textarea id="failTxt" readonly aria-label="Resumen de tu solicitud"></textarea><div class="cta"><button class="btn pri sm" type="button" id="copy">Copiar resumen</button><a class="btn sec sm insta" href="https://www.instagram.com/meshtactico/" rel="noopener">Abrir Instagram</a><button class="btn sec sm" type="button" id="retry">Volver al formulario</button></div></div>
+  </div>
+</div></section>
+
+<section class="band alt" id="faq"><div class="wrap faq">
+  <h2>Dudas frecuentes</h2>
+  <details><summary>¿Necesito licencia o pagar cuotas?</summary><p>No. Funciona en 868 MHz, banda de uso libre en Europa. Sin SIM, sin suscripciones y sin cuotas.</p></details>
+  <details><summary>¿Hace falta cobertura o internet?</summary><p>No. Los nodos hablan entre sí por radio y cada uno repite los mensajes de los demás. El móvil se conecta al nodo por Bluetooth para escribir y ver el mapa.</p></details>
+  <details><summary>¿Qué alcance tiene?</summary><p>Depende del terreno: desde cientos de metros entre edificios hasta varios kilómetros con visión directa. Con un relé en altura se cubren zonas mucho más amplias. Te orientamos según tu zona.</p></details>
+  <details><summary>¿Se puede usar sin móvil?</summary><p>Sí, como baliza de posición y como relé. Para escribir mensajes y ver a tu equipo en el mapa se usa la app gratuita Meshtastic en el móvil.</p></details>
+  <details><summary>¿Y si se desconfigura?</summary><p>Guardamos la configuración de cada red para restaurarla en minutos. Durante el seguimiento lo resolvemos contigo.</p></details>
+  <details><summary>¿Puedo ampliar la red más adelante?</summary><p>Sí. Configuramos los nodos nuevos con el mismo canal para que se unan a tu red sin tocar nada.</p></details>
+  <details><summary>¿Cuál es el plazo?</summary><p><span class="plazo-txt">3–4 semanas</span> desde que confirmas el pedido. Te lo indicamos cerrado en el presupuesto.</p></details>
+</div></section>
+
+<footer><div class="wrap">
+  <p><b style="color:var(--ink)">MESHTACTICO</b> · Redes LoRa configuradas a medida · <a class="insta" href="https://www.instagram.com/meshtactico/" rel="noopener">Instagram</a></p>
+  <p>Proyecto independiente. Meshtastic® es marca registrada de Meshtastic LLC. LilyGO es marca de su fabricante.</p>
+</div></footer>
+
+<script>
+{
+const CONFIG = {
+  endpoint: 'https://api.web3forms.com/submit',
+  accessKey: 'PEGA_AQUI_TU_ACCESS_KEY',
+  plazo: '3–4 semanas',
+  soporte: '30 días',
+  instagram: 'https://www.instagram.com/meshtactico/'
+};
+document.querySelectorAll('.plazo-txt').forEach(s => s.textContent = CONFIG.plazo);
+document.querySelectorAll('.soporte-txt').forEach(s => s.textContent = CONFIG.soporte);
+document.querySelectorAll('.insta').forEach(a => a.href = CONFIG.instagram);
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const G = '#46f28d', C = '#4cc9f0', O = '#ff8c42';
+const f1 = n => n.toFixed(1);
+
+/* Mapa del hero */
+const NODES = [{x:.08,y:.74,id:'ALFA-1'},{x:.25,y:.44,id:'ALFA-2'},{x:.46,y:.2,id:'RELÉ',relay:1},{x:.62,y:.66,id:'BRAVO-1'},{x:.79,y:.34,id:'BRAVO-2'},{x:.92,y:.76,id:'BASE'}];
+const LINKS = [[0,1],[1,2],[2,3],[2,4],[3,4],[4,5],[3,5],[0,3]];
+const HILLS = [[.46,.2,1],[.86,.88,.6],[.1,.12,.55],[.3,.98,.5]];
+const map = document.getElementById('map'), mapSvg = document.getElementById('mapsvg');
+function contours(W, H){
+  const s = Math.min(W, H); let o = '';
+  HILLS.forEach(([hx, hy, sc], h) => {
+    const cx = hx * W, cy = hy * H;
+    for (let k = 1; k <= 8; k++){
+      const r = k * s * .075 * sc; let d = '';
+      for (let i = 0; i <= 60; i++){
+        const a = i / 60 * Math.PI * 2;
+        const rr = r * (1 + .16 * Math.sin(3 * a + h * 1.7 + k * .15) + .08 * Math.sin(5 * a + h) + .04 * Math.sin(9 * a + k));
+        d += (i ? 'L' : 'M') + f1(cx + rr * Math.cos(a) * 1.45) + ' ' + f1(cy + rr * Math.sin(a));
+      }
+      o += `<path d="${d}Z" fill="none" stroke="${G}" stroke-opacity="${k % 4 ? .12 : .3}" stroke-width="${k % 4 ? 1 : 1.4}"/>`;
+    }
+  });
+  return o;
+}
+function label(x, y, t, W, color){
+  const w = t.length * 7.8 + 14, right = x + 14 + w < W - 8, lx = right ? x + 12 : x - 12 - w;
+  return `<rect x="${f1(lx)}" y="${f1(y - 12)}" width="${f1(w)}" height="24" rx="4" fill="#09100c" fill-opacity=".9" stroke="${color}" stroke-opacity=".5"/><text x="${f1(lx + w / 2)}" y="${f1(y + 4.5)}" text-anchor="middle" fill="${color}" font-family="Chakra Petch, sans-serif" font-weight="600" font-size="13">${t}</text>`;
+}
+function drawMap(){
+  const W = map.clientWidth, H = map.clientHeight; if (!W || !H) return;
+  const P = NODES.map(n => ({...n, X: n.x * W, Y: n.y * H}));
+  let o = '<g stroke="#1f3026" stroke-opacity=".7">';
+  for (let x = 60; x < W; x += 60) o += `<line x1="${x}" y1="0" x2="${x}" y2="${H}"/>`;
+  for (let y = 60; y < H; y += 60) o += `<line x1="0" y1="${y}" x2="${W}" y2="${y}"/>`;
+  o += '</g>' + contours(W, H);
+  let pk = '';
+  LINKS.forEach(([a, b], i) => {
+    const A = P[a], B = P[b];
+    const d = `M${f1(A.X)} ${f1(A.Y)}L${f1(B.X)} ${f1(B.Y)}`, r = `M${f1(B.X)} ${f1(B.Y)}L${f1(A.X)} ${f1(A.Y)}`;
+    o += `<path d="${d}" stroke="${C}" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="4 6" fill="none"/>`;
+    if (!RM) pk += `<circle r="3.5" fill="${C}"><animateMotion dur="${(2.2 + (i % 3) * .6).toFixed(1)}s" begin="${(i * .45).toFixed(2)}s" repeatCount="indefinite" path="${i % 2 ? r : d}"/></circle>`;
+  });
+  o += pk;
+  const showAll = W >= 560;
+  P.forEach(n => {
+    const col = n.relay ? O : G;
+    o += `<circle cx="${f1(n.X)}" cy="${f1(n.Y)}" r="15" fill="${col}" fill-opacity=".13"/>`;
+    o += n.relay
+      ? `<rect x="${f1(n.X - 6.5)}" y="${f1(n.Y - 6.5)}" width="13" height="13" fill="${O}" transform="rotate(45 ${f1(n.X)} ${f1(n.Y)})"/>`
+      : `<circle cx="${f1(n.X)}" cy="${f1(n.Y)}" r="6" fill="${G}"/>`;
+    if (showAll || n.relay || n.id === 'BASE') o += label(n.X, n.Y, n.id, W, col);
+  });
+  mapSvg.innerHTML = o;
+}
+const roMap = new ResizeObserver(drawMap); roMap.observe(map);
+
+/* Formulario y vista previa */
+const form = document.getElementById('form'), pvBox = document.getElementById('pvbox'), pv = document.getElementById('pv');
+const nIn = document.getElementById('nodos'), sum = document.getElementById('sum');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const clampN = v => Math.max(2, Math.min(50, parseInt(v, 10) || 2));
+function state(){
+  const fd = new FormData(form);
+  return {n: clampN(nIn.value), modelo: fd.get('modelo') || 'T-Echo Plus', sector: fd.get('sector') || '—', extras: fd.getAll('extras'),
+    names: String(fd.get('indicativos') || '').split(/[,\n;]+/).map(s => s.trim()).filter(Boolean)};
+}
+function drawPrev(){
+  const W = pvBox.clientWidth, H = pvBox.clientHeight; if (!W || !H) return;
+  const s = state(), n = s.n, relay = s.extras.includes('Relé solar');
+  const cx = W / 2, cy = H / 2, rx = W * .36, ry = H * .34, pts = [];
+  for (let i = 0; i < n; i++){
+    const a = -Math.PI / 2 + i / n * Math.PI * 2, j = 1 + .07 * Math.sin(i * 2.3);
+    pts.push([cx + Math.cos(a) * rx * j, cy + Math.sin(a) * ry * j, a]);
+  }
+  const line = (p, q, c) => `<line x1="${f1(p[0])}" y1="${f1(p[1])}" x2="${f1(q[0])}" y2="${f1(q[1])}" stroke="${c}" stroke-opacity=".5" stroke-width="1.4" stroke-dasharray="3 5"/>`;
+  let o = '';
+  const k = n >= 5 ? 2 : 1;
+  for (let i = 0; i < n; i++) for (let t = 1; t <= k; t++){ if (n === 2 && i === 1) continue; o += line(pts[i], pts[(i + t) % n], C); }
+  if (relay) pts.forEach(p => o += line(p, [cx, cy], O));
+  const r = n > 20 ? 4 : 6;
+  pts.forEach((p, i) => {
+    o += `<circle cx="${f1(p[0])}" cy="${f1(p[1])}" r="${r + 7}" fill="${G}" fill-opacity=".12"/><circle cx="${f1(p[0])}" cy="${f1(p[1])}" r="${r}" fill="${G}"/>`;
+    if (n <= 8){
+      const t = esc((s.names[i] || 'NODO-' + (i + 1)).slice(0, 12)), out = Math.cos(p[2]);
+      const anchor = Math.abs(out) < .3 ? 'middle' : out > 0 ? 'start' : 'end';
+      const lx = p[0] + (anchor === 'middle' ? 0 : out > 0 ? 12 : -12), ly = p[1] + (anchor === 'middle' ? (Math.sin(p[2]) > 0 ? 24 : -14) : 4.5);
+      o += `<text x="${f1(lx)}" y="${f1(ly)}" text-anchor="${anchor}" fill="#cfe3d6" font-family="Chakra Petch, sans-serif" font-weight="600" font-size="12">${t}</text>`;
+    }
+  });
+  if (relay) o += `<rect x="${f1(cx - 7)}" y="${f1(cy - 7)}" width="14" height="14" fill="${O}" transform="rotate(45 ${f1(cx)} ${f1(cy)})"/><text x="${f1(cx)}" y="${f1(cy + 26)}" text-anchor="middle" fill="${O}" font-family="Chakra Petch, sans-serif" font-weight="600" font-size="12">RELÉ SOLAR</text>`;
+  pv.innerHTML = o;
+  const rows = [['Equipos', `${n} × ${s.modelo}`], ['Uso', s.sector], ['Extras', s.extras.join(', ') || '—'], ['Plazo estimado', CONFIG.plazo]];
+  sum.innerHTML = rows.map(([a, b]) => `<li><span>${a}</span><b>${esc(b)}</b></li>`).join('');
+}
+const roPrev = new ResizeObserver(drawPrev); roPrev.observe(pvBox);
+
+const KEY = 'meshtactico-borrador';
+function saveDraft(){
+  try {
+    const d = {}; for (const el of form.elements){ if (!el.name || el.name === 'website' || el.name === 'consentimiento') continue;
+      if (el.type === 'radio' || el.type === 'checkbox'){ if (el.checked) (d[el.name] = d[el.name] || []).push(el.value); } else d[el.name] = el.value; }
+    localStorage.setItem(KEY, JSON.stringify(d));
+  } catch (e) {}
+}
+function loadDraft(){
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY) || 'null'); if (!d) return;
+    for (const el of form.elements){ if (!el.name || !(el.name in d)) continue;
+      if (el.type === 'radio' || el.type === 'checkbox') el.checked = [].concat(d[el.name]).includes(el.value); else el.value = d[el.name]; }
+  } catch (e) {}
+}
+loadDraft();
+form.addEventListener('input', () => { drawPrev(); saveDraft(); });
+form.addEventListener('change', () => { nIn.value = clampN(nIn.value); drawPrev(); saveDraft(); });
+document.getElementById('minus').addEventListener('click', () => { nIn.value = clampN(+nIn.value - 1); drawPrev(); saveDraft(); });
+document.getElementById('plus').addEventListener('click', () => { nIn.value = clampN(+nIn.value + 1); drawPrev(); saveDraft(); });
+drawPrev();
+
+const send = document.getElementById('send'), msg = document.getElementById('msg');
+const done = document.getElementById('done'), fail = document.getElementById('fail'), failTxt = document.getElementById('failTxt');
+function summaryText(fd){
+  const L = [['Uso', fd.get('sector')], ['Equipo', fd.get('modelo')], ['Nodos', fd.get('nodos')], ['Extras', fd.getAll('extras').join(', ')], ['Indicativos', fd.get('indicativos')], ['Zona', fd.get('zona')], ['Empresa', fd.get('empresa')], ['Detalle', fd.get('uso')], ['Nombre', fd.get('nombre')], ['Email', fd.get('email')], ['Teléfono', fd.get('telefono')]];
+  return 'Solicitud MESHTACTICO\n' + L.filter(([, v]) => v && String(v).trim()).map(([k, v]) => `${k}: ${v}`).join('\n');
+}
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!form.checkValidity()){
+    const bad = form.querySelector(':invalid');
+    msg.style.color = O;
+    msg.textContent = bad && bad.name === 'sector' ? 'Elige para qué la vas a usar.' : bad && bad.name === 'consentimiento' ? 'Marca la casilla de privacidad para poder responderte.' : 'Revisa tu nombre y un email válido.';
+    if (bad) bad.focus();
+    return;
+  }
+  const fd = new FormData(form);
+  if (fd.get('website')) return;
+  const body = new FormData();
+  body.append('access_key', CONFIG.accessKey);
+  body.append('subject', `Nueva solicitud: ${fd.get('nodos')} × ${fd.get('modelo')} · ${fd.get('nombre')}`);
+  body.append('from_name', 'Web MESHTACTICO');
+  [['Nombre', 'nombre'], ['email', 'email'], ['Teléfono', 'telefono'], ['Empresa o grupo', 'empresa'], ['Uso', 'sector'], ['Equipo', 'modelo'], ['Nodos', 'nodos'], ['Indicativos', 'indicativos'], ['Zona', 'zona'], ['Detalle', 'uso']]
+    .forEach(([label, key]) => { const v = String(fd.get(key) || '').trim(); if (v) body.append(label, v); });
+  body.append('Extras', fd.getAll('extras').join(', ') || '—');
+  body.append('Privacidad', 'Aceptada');
+  send.disabled = true; send.textContent = 'Enviando…'; msg.style.color = ''; msg.textContent = 'Enviando tu solicitud…';
+  try {
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 12000);
+    const res = await fetch(CONFIG.endpoint, {method: 'POST', body, signal: ctl.signal});
+    clearTimeout(t);
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok || j.success === false) throw new Error('HTTP ' + res.status);
+    document.getElementById('doneMail').textContent = fd.get('email');
+    form.hidden = true; done.hidden = false;
+    try { localStorage.removeItem(KEY); } catch (x) {}
+  } catch (err) {
+    failTxt.value = summaryText(fd);
+    form.hidden = true; fail.hidden = false;
+  } finally {
+    send.disabled = false; send.textContent = 'Enviar solicitud'; msg.style.color = ''; msg.textContent = 'Sin compromiso. Te respondemos en 24–48 h.';
+  }
+});
+document.getElementById('copy').addEventListener('click', async ev => {
+  const b = ev.currentTarget;
+  try { await navigator.clipboard.writeText(failTxt.value); b.textContent = 'Copiado'; }
+  catch (x) { failTxt.select(); b.textContent = 'Selecciona y copia'; }
+});
+document.getElementById('retry').addEventListener('click', () => { fail.hidden = true; form.hidden = false; });
+}
+</script>
+</body>
+</html>
